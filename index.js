@@ -1,6 +1,7 @@
 import express from 'express';
 import { buildSchema } from 'graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
+import expressPlayground from 'graphql-playground-middleware-express';
 import routes from './src/routes/crmRoutes';
 
 // Build my schema
@@ -33,6 +34,8 @@ app.use(
     rootValue: root,
   })
 );
+
+app.get('/playground', expressPlayground({ endpoint: '/graphql' }));
 
 app.listen(PORT, () =>
   console.log(`Your server is running on port ${PORT}/graphql`)
