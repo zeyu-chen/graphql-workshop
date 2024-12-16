@@ -1,25 +1,45 @@
-const games = [
-  { id: '1', title: 'Zelda, Tears of the Kingdom', platform: ['Switch'] },
-  { id: '2', title: 'Final Fantasy 7 Remake', platform: ['PS5', 'Xbox'] },
-  { id: '3', title: 'Elden Ring', platform: ['PS5', 'Xbox', 'PC'] },
-  { id: '4', title: 'Mario Kart', platform: ['Switch'] },
-  { id: '5', title: 'Pokemon Scarlet', platform: ['PS5', 'Xbox', 'PC'] },
-];
+import fs from 'fs';
+import path from 'path';
+import { Author, DB, Game, Review } from './types';
 
-const authors = [
-  { id: '1', name: 'mario', verified: true },
-  { id: '2', name: 'yoshi', verified: false },
-  { id: '3', name: 'peach', verified: true },
-];
+const DB_FILE = path.join(process.cwd(), 'db.json');
 
-const reviews = [
-  { id: '1', rating: 9, content: 'lorem ipsum', author_id: '1', game_id: '2' },
-  { id: '2', rating: 10, content: 'lorem ipsum', author_id: '2', game_id: '1' },
-  { id: '3', rating: 7, content: 'lorem ipsum', author_id: '3', game_id: '3' },
-  { id: '4', rating: 5, content: 'lorem ipsum', author_id: '2', game_id: '4' },
-  { id: '5', rating: 8, content: 'lorem ipsum', author_id: '2', game_id: '5' },
-  { id: '6', rating: 7, content: 'lorem ipsum', author_id: '1', game_id: '2' },
-  { id: '7', rating: 10, content: 'lorem ipsum', author_id: '3', game_id: '1' },
-];
+function loadData(): DB {
+  return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+}
 
-export default { games, authors, reviews };
+function saveData(data: DB) {
+  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+}
+
+const db = {
+  get games() {
+    return loadData().games;
+  },
+  get authors() {
+    return loadData().authors;
+  },
+  get reviews() {
+    return loadData().reviews;
+  },
+  saveGames(games: Game[]) {
+    const data = loadData();
+    data.games = games;
+    saveData(data);
+  },
+  saveAuthors(authors: Author[]) {
+    const data = loadData();
+    data.authors = authors;
+    saveData(data);
+  },
+  saveReviews(reviews: Review[]) {
+    const data = loadData();
+    data.reviews = reviews;
+    saveData(data);
+  },
+  saveAll({ games, authors, reviews }: DB) {
+    saveData({ games, authors, reviews });
+  },
+};
+
+export default db;
